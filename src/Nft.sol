@@ -18,8 +18,8 @@ contract Nft is ERC721, Ownable{
     uint256 public constant TOTAL_SUPPLY = 10000;
     uint256 public constant MINT_PRICE = 0.08 ether;
 
-    constructor( string memory _name, string memory _symbol) ERC721(_name, _symbol) Ownable(msg.sender){
-        // baseURI = _baseURI;
+    constructor( string memory _name, string memory _symbol, string memory _baseURI) ERC721(_name, _symbol) Ownable(msg.sender){
+        baseURI = _baseURI;
     }
 
     function mintTo(address receipient) public payable returns (uint256 ){
@@ -46,6 +46,16 @@ contract Nft is ERC721, Ownable{
                 : "";
     }
 
+    function withdrawPayments(address payable payee) external onlyOwner{
+        if (address(this).balance == 0) {
+            revert WithdrawTransfer();
+        }
+        payable(payee).transfer(address(this).balance);
+    }
+
+    function _checkOwner() internal view override {
+        require(msg.sender == owner(), "Ownable: caller is not the owner");
+    }
     
 }
 
